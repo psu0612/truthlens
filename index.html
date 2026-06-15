@@ -28,6 +28,34 @@ body{background:var(--bg);color:#D8D5D0;font-family:'Inter',sans-serif;min-heigh
 @keyframes countUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes heroGradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 @keyframes borderGlow{0%,100%{border-color:rgba(0,212,170,0.1)}50%{border-color:rgba(0,212,170,0.3)}}
+@keyframes verdictPop{0%{opacity:0;transform:scale(0.7)}60%{transform:scale(1.06)}100%{opacity:1;transform:scale(1)}}
+@keyframes verdictGlowGreen{0%{box-shadow:0 0 0 rgba(0,212,170,0)}30%{box-shadow:0 0 50px rgba(0,212,170,0.35)}100%{box-shadow:0 0 18px rgba(0,212,170,0.12)}}
+@keyframes verdictGlowRed{0%{box-shadow:0 0 0 rgba(233,57,70,0)}30%{box-shadow:0 0 50px rgba(233,57,70,0.4)}100%{box-shadow:0 0 18px rgba(233,57,70,0.15)}}
+@keyframes alertShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-3px)}40%{transform:translateX(3px)}60%{transform:translateX(-2px)}80%{transform:translateX(2px)}}
+@keyframes statPop{0%{transform:scale(1)}40%{transform:scale(1.12)}100%{transform:scale(1)}}
+@keyframes pixelPulse{0%,100%{opacity:0.4}50%{opacity:1}}
+@keyframes stampIn{0%{opacity:0;transform:scale(2.2) rotate(-12deg)}60%{opacity:1;transform:scale(0.95) rotate(2deg)}100%{opacity:1;transform:scale(1) rotate(0deg)}}
+
+/* Staggered entrance */
+.stagger>*{opacity:0;animation:fadeIn 0.5s ease forwards}
+.stagger>*:nth-child(1){animation-delay:0.05s}.stagger>*:nth-child(2){animation-delay:0.12s}
+.stagger>*:nth-child(3){animation-delay:0.19s}.stagger>*:nth-child(4){animation-delay:0.26s}
+.stagger>*:nth-child(5){animation-delay:0.33s}.stagger>*:nth-child(6){animation-delay:0.4s}
+.stagger>*:nth-child(7){animation-delay:0.47s}.stagger>*:nth-child(8){animation-delay:0.54s}
+
+/* Verdict reveal */
+.verdict{animation:verdictPop 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards}
+.verdict.green{animation:verdictPop 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards,verdictGlowGreen 1.6s ease forwards}
+.verdict.red{animation:verdictPop 0.55s cubic-bezier(0.34,1.56,0.64,1) forwards,verdictGlowRed 1.6s ease forwards,alertShake 0.5s ease 0.55s}
+.verdict-stamp{display:inline-block;animation:stampIn 0.5s cubic-bezier(0.34,1.56,0.64,1) 0.25s both}
+
+/* Stat pop on live update */
+.stat-pop{animation:statPop 0.4s ease}
+
+/* Simulated photo pixels in scan box */
+.pixel-photo{display:grid;grid-template-columns:repeat(12,1fr);gap:2px;width:150px;height:96px;margin:0 auto}
+.pixel-photo span{border-radius:1px;background:rgba(0,212,170,0.12)}
+.scanning .pixel-photo span{animation:pixelPulse 1.2s ease infinite}
 
 /* Live Ticker */
 .ticker-wrap{position:fixed;bottom:0;left:0;right:0;z-index:150;background:rgba(3,3,6,0.92);backdrop-filter:blur(12px);border-top:1px solid rgba(0,212,170,0.08);height:32px;overflow:hidden}
@@ -203,7 +231,7 @@ landing:()=>`
     <p style="font-size:17px;color:#666;font-weight:400;margin:0 0 6px;text-align:center">Deepfake Provenance Registry on Rialo</p>
     <p style="font-size:13px;color:#444;max-width:460px;margin:0 auto 36px;line-height:1.7;text-align:center">Proves whether photos are real or AI-generated using dual hashing,<br>device TEE signatures, and Rialo's on-chain automation.</p>
 
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:560px;margin:0 auto 28px" class="g4">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:560px;margin:0 auto 28px" class="g4 stagger">
       ${[{i:'📸',t:'Capture',d:'Dual hash + TEE',s:'capture',c:'var(--t)'},{i:'🔍',t:'4-Tier Verify',d:'Real / AI / Unknown / Fake',s:'verify',c:'var(--b)'},{i:'✏️',t:'Edit Chain',d:'Track legitimate edits',s:'editchain',c:'var(--o)'},{i:'💰',t:'Business',d:'5 revenue streams',s:'business',c:'var(--p)'}].map(x=>`
       <div class="box" style="padding:16px 10px;cursor:pointer;text-align:center" onclick="go('${x.s}')">
         <div style="font-size:24px;margin-bottom:8px;animation:float ${3+Math.random()*2}s ease-in-out infinite">${x.i}</div>
@@ -218,8 +246,8 @@ landing:()=>`
       <button class="b2" onclick="go('business')">Business Model</button>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:560px;margin:0 auto 28px" class="g4">
-      <div class="hero-stat"><div class="hero-stat-num" id="liveVerified">3,291,047</div><div class="hero-stat-label">Photos Verified</div></div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:560px;margin:0 auto 28px" class="g4 stagger">
+      <div class="hero-stat"><div class="hero-stat-num" id="liveVerified">3,291,047</div><div class="hero-stat-label">Photos Registered</div></div>
       <div class="hero-stat"><div class="hero-stat-num" id="liveFlagged" style="background:linear-gradient(135deg,var(--r),#FF6B6B);-webkit-background-clip:text;-webkit-text-fill-color:transparent">41,208</div><div class="hero-stat-label">Deepfakes Caught</div></div>
       <div class="hero-stat"><div class="hero-stat-num" id="livePartners">147</div><div class="hero-stat-label">Device Partners</div></div>
       <div class="hero-stat"><div class="hero-stat-num">99.8%</div><div class="hero-stat-label">Accuracy Rate</div></div>
@@ -234,7 +262,7 @@ landing:()=>`
 // ============ CAPTURE ============
 capture:()=>`<div class="wrap">
 <div class="hdr"><div class="hdr-n">01</div><div><div class="hdr-t">Capture</div><div class="hdr-s">Dual-hash proof created at the moment of capture</div></div></div>
-<div class="cols">
+<div class="cols stagger">
   <div class="box" style="display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden">
     <div id="captureFlash" style="position:absolute;inset:0;background:white;opacity:0;pointer-events:none;z-index:20;border-radius:14px;transition:opacity 0.1s"></div>
     <div id="phoneIcon" style="font-size:56px;margin-bottom:12px;transition:all 0.3s;animation:float 3s ease-in-out infinite">📱</div>
@@ -259,7 +287,7 @@ else center=`<div style="background:rgba(0,212,170,0.05);border:1px solid rgba(0
 ${[['tx_hash','0xr1a10...7f3a2b','#999'],['block','#2,103,847','#999'],['crypto_hash','STORED','var(--t)'],['percep_hash','STORED','var(--b)'],['tee_sig','VERIFIED','var(--t)']].map(x=>`<div class="code" style="font-size:10px;display:flex;gap:6px"><span style="color:#444">${x[0]}:</span><span style="color:${x[2]}">${x[1]}</span></div>`).join('')}</div>`;
 return `<div class="wrap">
 <div class="hdr"><div class="hdr-n">02</div><div><div class="hdr-t">Register</div><div class="hdr-s">Auto-encrypted on-chain registration</div></div></div>
-<div class="cols">
+<div class="cols stagger">
   <div class="box" style="display:flex;flex-direction:column;align-items:center">
     <div style="width:100%;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
       ${[{e:'📱',l:'TEE',on:1},{e:'🔐',l:'REX',on:rg>=1},{e:'⛓️',l:'Chain',on:rg>=2}].map(x=>`<div style="padding:10px;border-radius:10px;text-align:center;min-width:60px;background:${x.on?'rgba(0,212,170,0.05)':'var(--card2)'};border:1px solid ${x.on?'rgba(0,212,170,0.15)':'var(--border)'};transition:all 0.4s"><div style="font-size:18px;margin-bottom:2px">${x.e}</div><div style="font-size:8px;color:${x.on?'var(--t)':'#333'};font-weight:600">${x.l}</div></div>`).join('<div style="flex:1;height:2px;margin:0 4px;background:linear-gradient(90deg,rgba(0,212,170,0.15),rgba(0,212,170,0.05))"></div>')}
@@ -280,12 +308,10 @@ let res='';
 if(vg){
   res=`<div class="vp-container" id="vpBox">
     <div style="font-size:11px;font-weight:600;color:var(--t);margin-bottom:14px">Real-time Verification Process</div>
-    <div class="scan-container" id="scanBox" style="height:120px;background:var(--card2);margin-bottom:16px;display:flex;align-items:center;justify-content:center">
+    <div class="scan-container scanning" id="scanBox" style="height:130px;background:var(--card2);margin-bottom:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px">
       <div class="scan-grid"></div>
-      <div style="position:relative;z-index:5;text-align:center">
-        <div style="font-size:32px;margin-bottom:4px">🔍</div>
-        <div style="font-size:10px;color:var(--t);font-weight:600" id="scanStatus">Scanning content...</div>
-      </div>
+      <div class="pixel-photo" id="pixelPhoto"></div>
+      <div style="font-size:10px;color:var(--t);font-weight:600;position:relative;z-index:5" id="scanStatus">Scanning content...</div>
     </div>
     ${[{i:'🔐',t:'Cryptographic hash lookup',id:'vps1'},{i:'👁️',t:'Perceptual hash lookup',id:'vps2'},{i:'🤖',t:'AI ensemble analysis',id:'vps3'},{i:'🏷️',t:'Assigning verification tier',id:'vps4'}].map((s,i)=>`
     <div class="vp-step" id="${s.id}" style="opacity:0.3">
@@ -306,20 +332,21 @@ if(vg){
     fake:{c:'var(--r)',ic:'⚠️',t:'SUSPECTED DEEPFAKE',tier:'Tier 4',items:[{k:'crypto_hash',v:'No match',c:'var(--r)'},{k:'percep_hash',v:'No match',c:'var(--r)'},{k:'ai_model_1',v:'Synthetic (94.2%)',c:'var(--r)'},{k:'ai_model_2',v:'Synthetic (91.7%)',c:'var(--r)'},{k:'ai_model_3',v:'Synthetic (88.5%)',c:'var(--r)'},{k:'ensemble',v:'91.5% confidence',c:'var(--r)'}]}
   };
   const t=tiers[vr];
-  res=`<div style="background:rgba(0,0,0,0.3);border:1px solid ${t.c}25;border-radius:12px;padding:16px;animation:fadeIn 0.5s ease">
+  const verdictClass=vr==='real'?'verdict green':vr==='fake'?'verdict red':'verdict';
+  res=`<div class="${verdictClass}" style="background:rgba(0,0,0,0.3);border:1px solid ${t.c}25;border-radius:12px;padding:16px">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-      <span style="font-size:14px;font-weight:700;color:${t.c}">${t.ic} ${t.t}</span>
+      <span class="verdict-stamp" style="font-size:14px;font-weight:700;color:${t.c}">${t.ic} ${t.t}</span>
       <span class="tag" style="background:${t.c}15;color:${t.c}">${t.tier}</span>
     </div>
     <div style="display:flex;flex-direction:column;gap:3px">
-      ${t.items.map(i=>`<div class="code" style="font-size:10px;display:flex;gap:6px"><span style="color:#444">${i.k}:</span><span style="color:${i.c}">${i.v}</span></div>`).join('')}
+      ${t.items.map((i,idx)=>`<div class="code" style="font-size:10px;display:flex;gap:6px;opacity:0;animation:fadeIn 0.35s ease ${0.4+idx*0.1}s forwards"><span style="color:#444">${i.k}:</span><span style="color:${i.c}">${i.v}</span></div>`).join('')}
     </div>
-    ${vr==='fake'?`<div style="margin-top:10px"><div style="display:flex;justify-content:space-between;font-size:9px"><span style="color:#666">AI Confidence (ensemble)</span><span style="color:var(--r);font-weight:700">91.5%</span></div><div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:4px"><div style="height:100%;width:91.5%;background:linear-gradient(90deg,var(--r),#FF6B6B);border-radius:2px"></div></div><div style="font-size:8px;color:#444;margin-top:3px">3 independent models • Processed inside REX</div></div>`:''}
+    ${vr==='fake'?`<div style="margin-top:10px;opacity:0;animation:fadeIn 0.4s ease 1s forwards"><div style="display:flex;justify-content:space-between;font-size:9px"><span style="color:#666">AI Confidence (ensemble)</span><span style="color:var(--r);font-weight:700">91.5%</span></div><div style="height:4px;background:var(--border);border-radius:2px;overflow:hidden;margin-top:4px"><div style="height:100%;width:91.5%;background:linear-gradient(90deg,var(--r),#FF6B6B);border-radius:2px"></div></div><div style="font-size:8px;color:#444;margin-top:3px">3 independent models • Processed inside REX</div></div>`:''}
   </div>`;
 }
 return `<div class="wrap">
 <div class="hdr"><div class="hdr-n">03</div><div><div class="hdr-t">Verify</div><div class="hdr-s">4-tier verification with real-time process visualization</div></div></div>
-<div class="cols">
+<div class="cols stagger">
   <div class="box">
     <div style="font-size:11px;font-weight:600;color:#666;margin-bottom:12px">Select content to verify:</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
@@ -380,14 +407,15 @@ if(al===0){
     <div style="flex:1;display:flex;align-items:center;gap:6px"><span style="font-size:13px">${s.i}</span><span style="font-size:11px;color:#AAA">${s.t}</span></div>
     <span class="code" style="font-size:10px;color:var(--t)">✓</span>
   </div>`).join('')}
-  <div style="margin-top:14px;padding:14px;background:rgba(233,57,70,0.05);border:1px solid rgba(233,57,70,0.12);border-radius:10px;animation:fadeIn 0.5s ease">
-    <div style="font-size:12px;font-weight:600;color:var(--r);margin-bottom:6px">⚠️ Tier 4: Suspected Deepfake — 91.5% confidence</div>
+  <div style="margin-top:14px;padding:14px;background:rgba(233,57,70,0.05);border:1px solid rgba(233,57,70,0.12);border-radius:10px" class="verdict red">
+    <div style="font-size:12px;font-weight:600;color:var(--r);margin-bottom:6px"><span class="verdict-stamp">⚠️ Tier 4: Suspected Deepfake — 91.5% confidence</span></div>
     <div style="font-size:10px;color:#888;line-height:1.5">No verified origin. AI ensemble (3 models) flagged synthetic patterns.<br><span style="font-size:9px;color:#444">Rialo on-chain • Block #2,103,901 • 0.8s processing time</span></div>
-  </div>`;
+  </div>
+  <button class="b2" style="margin-top:10px;width:100%;font-size:10px" onclick="al=1;render()">↻ Replay Simulation</button>`;
 }
 return `<div class="wrap">
 <div class="hdr"><div class="hdr-n">04</div><div><div class="hdr-t">Alert</div><div class="hdr-s">Automatic classification via Reactive Transactions</div></div></div>
-<div class="cols">
+<div class="cols stagger">
   <div class="box">${leftContent}</div>
   <div>
     <h3>Fully Automated</h3>
@@ -400,7 +428,7 @@ return `<div class="wrap">
 // ============ EDIT CHAIN ============
 editchain:()=>`<div class="wrap">
 <div class="hdr"><div class="hdr-n">✏️</div><div><div class="hdr-t">Edit Chain</div><div class="hdr-s">Tracking legitimate edits without losing verification</div></div></div>
-<div class="cols">
+<div class="cols stagger">
   <div>
     <h3>The Problem</h3>
     <div style="padding:14px;background:rgba(233,57,70,0.04);border:1px solid rgba(233,57,70,0.1);border-radius:10px;margin-bottom:16px">
@@ -433,7 +461,7 @@ editchain:()=>`<div class="wrap">
 // ============ DUAL HASH ============
 dualhash:()=>`<div class="wrap">
 <div class="hdr"><div class="hdr-n">🔗</div><div><div class="hdr-t">Dual Hash System</div><div class="hdr-s">Solving the compression problem</div></div></div>
-<div class="cols">
+<div class="cols stagger">
   <div>
     <h3>The Problem</h3>
     <div style="padding:14px;background:rgba(233,57,70,0.04);border:1px solid rgba(233,57,70,0.1);border-radius:10px;margin-bottom:16px">
@@ -475,7 +503,7 @@ dualhash:()=>`<div class="wrap">
 // ============ BUSINESS ============
 business:()=>`<div class="wrap">
 <div class="hdr"><div class="hdr-n">💰</div><div><div class="hdr-t">Business Model</div><div class="hdr-s">How TruthLens sustains itself</div></div></div>
-<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px" class="g3">
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:20px" class="g3 stagger">
   ${[{e:'📰',t:'Media Subscription',d:'News orgs pay monthly for "TruthLens Verified" badges. Builds reader trust.',tag:'Recurring',c:'var(--t)'},{e:'🔌',t:'API Pay-Per-Use',d:'Insurance, legal, real estate: per-verification API fees for enterprises.',tag:'Usage-Based',c:'var(--b)'},{e:'📜',t:'Legal Certificates',d:'Court-admissible proof of photo origin. Per-certificate fee.',tag:'Per-Transaction',c:'var(--o)'}].map(x=>`
   <div class="biz">
     <div style="font-size:26px;margin-bottom:10px">${x.e}</div>
@@ -509,7 +537,7 @@ business:()=>`<div class="wrap">
 // ============ DASHBOARD ============
 dashboard:()=>`<div class="wrap">
 <div class="hdr"><div class="hdr-n">📊</div><div><div class="hdr-t">Dashboard</div><div class="hdr-s">System overview and honest roadmap</div></div></div>
-<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:18px" class="g4">
+<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:18px" class="g4 stagger">
   ${[{l:'Registered',v:'3,291,047',s:'dual-hash records',c:'var(--t)'},{l:'Verified',v:'1,847,293',s:'requests processed',c:'var(--b)'},{l:'Flagged',v:'41,208',s:'suspected fakes',c:'var(--r)'},{l:'AI Labeled',v:'127,394',s:'honest AI content',c:'var(--o)'}].map(x=>`
   <div class="box" style="padding:16px">
     <div style="font-size:22px;font-weight:800;color:${x.c}" class="dash-live">${x.v}</div>
@@ -554,9 +582,19 @@ function startVerify(type){
 function runVerifyAnim(){
   const scanBox=document.getElementById('scanBox');
   const scanStatus=document.getElementById('scanStatus');
-  // Single continuous scan that runs through entire animation
+  // Build simulated photo pixels with varied colors and pulse delays
+  const pp=document.getElementById('pixelPhoto');
+  if(pp){
+    let phtml='';
+    for(let i=0;i<96;i++){
+      const v=Math.random();
+      const c=v<0.55?`rgba(0,212,170,${0.08+Math.random()*0.25})`:v<0.8?`rgba(0,136,204,${0.1+Math.random()*0.2})`:`rgba(238,236,234,${0.05+Math.random()*0.12})`;
+      phtml+=`<span style="background:${c};animation-delay:${(Math.random()*1.2).toFixed(2)}s"></span>`;
+    }
+    pp.innerHTML=phtml;
+  }
+  // Single continuous scan line through entire animation
   if(scanBox){
-    scanBox.classList.add('scanning');
     const scanLine=document.createElement('div');
     scanLine.className='scan-line';
     scanLine.style.animation='scanLine 2.8s ease-in-out infinite';
@@ -720,6 +758,13 @@ function doCapture(){
     if(i>=lines.length){
       clearInterval(typeInterval);
       if(teeStatus)teeStatus.innerHTML='<span style="color:var(--t)">✓ TEE package ready for Rialo</span>';
+      // Show replay option for live presentations
+      setTimeout(()=>{
+        if(btn){
+          btn.style.display='';
+          btn.innerHTML='<button class="b2" style="font-size:10px;padding:6px 16px" onclick="doCapture()">↻ Replay Capture</button>';
+        }
+      },600);
       return;
     }
     const line=lines[i];
@@ -761,17 +806,20 @@ function startAlertAnim(){
 
 // === LIVE STATS (home + dashboard) ===
 let liveStatsInterval=null;
+function popStat(el){if(!el)return;el.classList.remove('stat-pop');void el.offsetWidth;el.classList.add('stat-pop');}
 function startLiveStats(){
   if(liveStatsInterval)clearInterval(liveStatsInterval);
   let verified=3291047,flagged=41208;
   liveStatsInterval=setInterval(()=>{
     if(cur!=='landing'){clearInterval(liveStatsInterval);liveStatsInterval=null;return;}
     verified+=Math.floor(Math.random()*3)+1;
-    flagged+=Math.random()<0.3?1:0;
     const vEl=document.getElementById('liveVerified');
-    const fEl=document.getElementById('liveFlagged');
-    if(vEl)vEl.textContent=verified.toLocaleString();
-    if(fEl)fEl.textContent=flagged.toLocaleString();
+    if(vEl){vEl.textContent=verified.toLocaleString();popStat(vEl);}
+    if(Math.random()<0.3){
+      flagged+=1;
+      const fEl=document.getElementById('liveFlagged');
+      if(fEl){fEl.textContent=flagged.toLocaleString();popStat(fEl);}
+    }
   },2000);
 }
 
@@ -781,15 +829,13 @@ function startDashStats(){
   let reg=3291047,ver=1847293,flag=41208,ai=127394;
   dashStatsInterval=setInterval(()=>{
     if(cur!=='dashboard'){clearInterval(dashStatsInterval);dashStatsInterval=null;return;}
+    const els=document.querySelectorAll('.dash-live');
     reg+=Math.floor(Math.random()*5)+1;
     ver+=Math.floor(Math.random()*3)+1;
-    flag+=Math.random()<0.2?1:0;
-    ai+=Math.random()<0.4?1:0;
-    const els=document.querySelectorAll('.dash-live');
-    if(els[0])els[0].textContent=reg.toLocaleString();
-    if(els[1])els[1].textContent=ver.toLocaleString();
-    if(els[2])els[2].textContent=flag.toLocaleString();
-    if(els[3])els[3].textContent=ai.toLocaleString();
+    if(els[0]){els[0].textContent=reg.toLocaleString();popStat(els[0]);}
+    if(els[1]){els[1].textContent=ver.toLocaleString();popStat(els[1]);}
+    if(Math.random()<0.2&&els[2]){flag+=1;els[2].textContent=flag.toLocaleString();popStat(els[2]);}
+    if(Math.random()<0.4&&els[3]){ai+=1;els[3].textContent=ai.toLocaleString();popStat(els[3]);}
   },2000);
 }
 
